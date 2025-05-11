@@ -9,7 +9,7 @@ Setup and usage:
   export NOTION_TOKEN=<your_notion_token>
   python index.py [DATABASE_ID]
 
-If DATABASE_ID is omitted, it defaults to 5ae98e91b6c1427c8e9e01552e05d3c5
+If DATABASE_ID is omitted, supply it via the NOTION_DATABASE_ID environment variable.
 """
 
 import os
@@ -26,7 +26,10 @@ def main():
         print("Error: Please set NOTION_TOKEN environment variable.")
         sys.exit(1)
 
-    database_id = sys.argv[1] if len(sys.argv) > 1 else "5ae98e91b6c1427c8e9e01552e05d3c5"
+database_id = sys.argv[1] if len(sys.argv) > 1 else os.getenv("NOTION_DATABASE_ID")
+if not database_id:
+    print("Error: Please provide DATABASE_ID as an argument or set NOTION_DATABASE_ID environment variable.")
+    sys.exit(1)
 
     notion = Client(auth=token)
 

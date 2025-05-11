@@ -5,7 +5,7 @@
   Usage:
     1. npm install @notionhq/client
     2. set NOTION_TOKEN=your_integration_token
-    3. node index.js [DATABASE_ID]
+    3. node index.js [DATABASE_ID] or set NOTION_DATABASE_ID environment variable
 */
 
 const { Client } = require('@notionhq/client');
@@ -14,8 +14,12 @@ const { Client } = require('@notionhq/client');
 const notion = new Client({ auth: process.env.NOTION_TOKEN });
 
 async function main() {
-  // Accept database ID from the first CLI argument, otherwise use default
-  const databaseId = process.argv[2] || '5ae98e91b6c1427c8e9e01552e05d3c5';
+  // Accept database ID from the first CLI argument or from NOTION_DATABASE_ID env var
+  const databaseId = process.argv[2] || process.env.NOTION_DATABASE_ID;
+  if (!databaseId) {
+    console.error('Error: Please provide DATABASE_ID as an argument or set NOTION_DATABASE_ID environment variable.');
+    process.exit(1);
+  }
 
   try {
     const response = await notion.databases.retrieve({ database_id: databaseId });
