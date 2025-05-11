@@ -1,0 +1,394 @@
+{
+  "database_id": "5ae98e91b6c1427c8e9e01552e05d3c5",
+  "properties": {
+    "Adherence List (Enrolled 3.0)": {
+      "type": "formula",
+      "property_id": "%3AAqE",
+      "formula_expression": "let(\n  activeAdherenceStudents, filter(\n    {{notion:block_property:aCJU:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}},\n    and(\n      or(\n        current.{{notion:block_property:%7CIej:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} == \"Enrolled\",\n        current.{{notion:block_property:%7CIej:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} == \"Course Jump - Enrolled\"\n      ),\n      current.{{notion:block_property:BWo%3A:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} > 14\n    )\n  ),\n  activeAdherenceStudents.map(current.{{notion:block_property:OKXg:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}})\n)\n\n"
+    },
+    "6mo Adh. (No Zero) ": {
+      "type": "formula",
+      "property_id": "%3ALKg",
+      "formula_expression": "lets(\n    enrolledStudentsAdherence, \n        {{notion:block_property:%5E%7D%7Dj:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}\n        .filter(current.{{notion:block_property:j%3AEM:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} != 0)\n        .map(current.{{notion:block_property:j%3AEM:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}),\n    sumAdherence, \n        enrolledStudentsAdherence.sum(),\n    numberStudents, \n        enrolledStudentsAdherence.length(),\n    round(sumAdherence / numberStudents)\n)\n"
+    },
+    "": {
+      "type": "formula",
+      "property_id": "%3C%7DMc",
+      "formula_expression": "filter({{notion:block_property:%3AAqE:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, current == 0).length()\n"
+    },
+    "Adh Change (Weekly)": {
+      "type": "formula",
+      "property_id": "%3C%7DNU",
+      "formula_expression": "let(\n  diff, {{notion:block_property:fScg:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} - {{notion:block_property:Tlgy:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}},\n  ifs(\n    diff > 0, (\"+\" + diff.format()).style(\"b\", \"green\"),\n    diff < 0, diff.format().style(\"b\", \"red\"),\n    diff.format().style(\"b\", \"gray\") \n  )\n)\n"
+    },
+    "Last edited time": {
+      "type": "last_edited_time",
+      "property_id": "%3EF%3Ck"
+    },
+    "Student OpenClass Assignments": {
+      "type": "relation",
+      "property_id": "%3F%3CDl",
+      "relation_database_id": "cd406c8b-193d-4e9a-b99f-893fd08f0425",
+      "relation_database_title": "Student OpenClass Assignments"
+    },
+    "Graduates": {
+      "type": "rollup",
+      "property_id": "%40kCv",
+      "relation_database_id": "f3f46cb8-400e-4278-86b8-c4eab3983f4c",
+      "relation_database_title": "Alumni",
+      "rollup_property_name": "Name",
+      "rollup_function": "unique"
+    },
+    "Total Students (ALL)": {
+      "type": "formula",
+      "property_id": "Adb%40",
+      "formula_expression": "{{notion:block_property:aCJU:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}.length() + {{notion:block_property:t%5CO~:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}.length()"
+    },
+    "Pathway Pacing": {
+      "type": "relation",
+      "property_id": "BDd%3E",
+      "relation_database_id": "141d15b0-3f0a-80fa-8527-df8a08ca47a9",
+      "relation_database_title": "Pathway Pacing"
+    },
+    "\ud83e\uddd1\u200d\ud83c\udf93 Alumni 1": {
+      "type": "relation",
+      "property_id": "CNLK",
+      "relation_database_id": "f3f46cb8-400e-4278-86b8-c4eab3983f4c",
+      "relation_database_title": "Alumni"
+    },
+    "Student Success": {
+      "type": "relation",
+      "property_id": "DrvZ",
+      "relation_database_id": "0a577850-b5ba-46f3-a59d-a5cc9eee8844",
+      "relation_database_title": "Staff"
+    },
+    "Adh": {
+      "type": "formula",
+      "property_id": "GMC%3D",
+      "formula_expression": "lets(\n  adh, if({{notion:block_property:%5ClaF:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, {{notion:block_property:fScg:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, {{notion:block_property:hjv%40:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}),\n\n  adherenceText, ifs(\n    adh > 100, \"Adherence:\".style(\"b\", \"purple_background\"),\n    adh >= 96, \"Adherence:\".style(\"b\", \"purple_background\"),\n    adh >= 81, \"Adherence:\".style(\"b\", \"green_background\"),\n    adh >= 70, \"Adherence:\".style(\"b\", \"blue_background\"),\n    adh >= 50, \"Adherence:\".style(\"b\", \"yellow_background\"),\n    \"Adherence:\".style(\"b\", \"red_background\") \n  ),\n\n  adhText, ifs(\n    adh > 100, adh.format().style(\"b\", \"black\"),\n    adh >= 96, adh.format().style(\"b\", \"black\"),\n    adh >= 81, adh.format().style(\"b\", \"black\"),\n    adh >= 70, adh.format().style(\"b\", \"black\"),\n    adh >= 50, adh.format().style(\"b\", \"black\"),\n    adh.format().style(\"b\", \"red\") \n  ),\n\n  adherenceText + \" \" + adhText\n)\n\n"
+    },
+    "Adherence Rollup (New)": {
+      "type": "rollup",
+      "property_id": "H%7BiZ",
+      "relation_database_id": "36ab6c5d-657c-4a0d-9b33-05e8cab135b4",
+      "relation_database_title": "Students",
+      "rollup_property_name": "NEW ADHERENCE",
+      "rollup_function": "show_original"
+    },
+    "Staff": {
+      "type": "relation",
+      "property_id": "JcfM",
+      "relation_database_id": "0a577850-b5ba-46f3-a59d-a5cc9eee8844",
+      "relation_database_title": "Staff"
+    },
+    "COHORTS STATS": {
+      "type": "relation",
+      "property_id": "L%3BXp",
+      "relation_database_id": "5c1c3961-7fcb-42ba-b337-b7d475f6e3c4",
+      "relation_database_title": "COHORTS STATS"
+    },
+    "HP(1-5) Zoom/Meeting": {
+      "type": "formula",
+      "property_id": "L%3E%3CM",
+      "formula_expression": "length(\n  filter(\n    flat(\n      map(\n        filter(\n          {{notion:block_property:aCJU:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}},\n          current.{{notion:block_property:K%5Dc%3D:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}\n        ),\n        current.{{notion:block_property:m%5D~k:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}\n      )\n    ),\n    or(\n      current == \"Zoom\",\n      current == \"Meeting\"\n    )\n  )\n)\n"
+    },
+    "HP(1-5) Disco/Slack": {
+      "type": "formula",
+      "property_id": "L%5BMc",
+      "formula_expression": "length(\n  filter(\n    flat(\n      map(\n        filter(\n          {{notion:block_property:aCJU:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}},\n          current.{{notion:block_property:K%5Dc%3D:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}\n        ),\n        current.{{notion:block_property:m%5D~k:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}\n      )\n    ),\n    or(\n      current == \"Disco\",\n      current == \"Slack\"\n    )\n  )\n)\n"
+    },
+    "HP (6-11)": {
+      "type": "formula",
+      "property_id": "M%60rB",
+      "formula_expression": "map({{notion:block_property:ixyT:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, current >= 6).filter(current).length()\n"
+    },
+    "Instructor": {
+      "type": "relation",
+      "property_id": "N%40%3CH",
+      "relation_database_id": "0a577850-b5ba-46f3-a59d-a5cc9eee8844",
+      "relation_database_title": "Staff"
+    },
+    "HP(6-11) Disco/Slack": {
+      "type": "formula",
+      "property_id": "OhFL",
+      "formula_expression": "length(\n  filter(\n    flat(\n      map(\n        filter(\n          {{notion:block_property:aCJU:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}},\n          current.{{notion:block_property:CyxD:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}\n        ),\n        current.{{notion:block_property:m%5D~k:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}\n      )\n    ),\n    or(\n      current == \"Disco\",\n      current == \"Slack\"\n    )\n  )\n)\n"
+    },
+    "Withdrew": {
+      "type": "formula",
+      "property_id": "PdMe",
+      "formula_expression": "lets(\n  allDroppedStudents, filter({{notion:block_property:aCJU:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, current.{{notion:block_property:%7CIej:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} == \"Dropped\"),\n  \n  allWithdrewStudents, filter(\n    allDroppedStudents,\n    current.{{notion:block_property:dI%3Be:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} < 2\n    and (current.{{notion:block_property:KzH%7D:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} < 20)\n  ),\n  \n  allWithdrewStudents.length()\n)"
+    },
+    "Active": {
+      "type": "formula",
+      "property_id": "Q%5Cz%7B",
+      "formula_expression": "if(({{notion:block_property:bPxb:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}>0 && {{notion:block_property:%7Ds%3AG:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} < today() || {{notion:block_property:%5B%3D%3BJ:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}), true, false)\n"
+    },
+    "Status": {
+      "type": "status",
+      "property_id": "R_Xk"
+    },
+    "\ud83d\udcfb Programs": {
+      "type": "relation",
+      "property_id": "RkHy",
+      "relation_database_id": "b8432aaa-ee38-4349-bd42-92693b799b70",
+      "relation_database_title": "Programs"
+    },
+    "Adh \u2349": {
+      "type": "formula",
+      "property_id": "Rq%7B%3D",
+      "formula_expression": "if({{notion:block_property:%5ClaF:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, {{notion:block_property:sY%3Fc:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, {{notion:block_property:%3ALKg:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}).format().style(\"b\", \"green\")\n"
+    },
+    "Adh (Last Week)": {
+      "type": "number",
+      "property_id": "Tlgy"
+    },
+    "6 Month Pace": {
+      "type": "rollup",
+      "property_id": "Ue_g",
+      "relation_database_id": "b8432aaa-ee38-4349-bd42-92693b799b70",
+      "relation_database_title": "Programs",
+      "rollup_property_name": "6-Month Pace",
+      "rollup_function": "show_original"
+    },
+    "COUNT Adherence Rollup (New)": {
+      "type": "rollup",
+      "property_id": "Voil",
+      "relation_database_id": "36ab6c5d-657c-4a0d-9b33-05e8cab135b4",
+      "relation_database_title": "Students",
+      "rollup_property_name": "NEW ADHERENCE",
+      "rollup_function": "count"
+    },
+    "Num Typeform Submissions": {
+      "type": "rollup",
+      "property_id": "WNob",
+      "relation_database_id": "118d15b0-3f0a-803a-8f16-daedc8b81378",
+      "relation_database_title": "Pathway NPS Surveys (TF)",
+      "rollup_property_name": "TF ID",
+      "rollup_function": "count"
+    },
+    "Created time": {
+      "type": "created_time",
+      "property_id": "WRfz"
+    },
+    "HP(1-5) Email/Text/Phone": {
+      "type": "formula",
+      "property_id": "XnT%3B",
+      "formula_expression": "length(\n  filter(\n    flat(\n      map(\n        filter(\n          {{notion:block_property:aCJU:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}},\n          current.{{notion:block_property:K%5Dc%3D:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}\n        ),\n        current.{{notion:block_property:m%5D~k:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}\n      )\n    ),\n    or(\n      current == \"Email\",\n      current == \"Text\"\n    )\n  )\n)\n"
+    },
+    "Coach Meetings Log": {
+      "type": "relation",
+      "property_id": "Y%7B%5Bx",
+      "relation_database_id": "1c336878-122a-44b0-bfa4-83e8c3b10d7b",
+      "relation_database_title": "Coach Meetings Log"
+    },
+    "Archive": {
+      "type": "checkbox",
+      "property_id": "ZXt%3E"
+    },
+    "Specialization": {
+      "type": "checkbox",
+      "property_id": "%5B%3D%3BJ"
+    },
+    "Flex 3.0": {
+      "type": "checkbox",
+      "property_id": "%5ClaF"
+    },
+    "Graduated": {
+      "type": "formula",
+      "property_id": "%5D_eN",
+      "formula_expression": "{{notion:block_property:t%5CO~:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}.length()"
+    },
+    "Welcome Event": {
+      "type": "date",
+      "property_id": "%5EV%7CE"
+    },
+    "End Date": {
+      "type": "date",
+      "property_id": "%5EzQH"
+    },
+    "Enrolled Students (Objects)": {
+      "type": "formula",
+      "property_id": "%5E%7D%7Dj",
+      "formula_expression": "filter({{notion:block_property:aCJU:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, current.{{notion:block_property:%7CIej:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} == \"Enrolled\" || current.{{notion:block_property:%7CIej:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} == \"Course Jump - Enrolled\")"
+    },
+    "Ungraded Assignments": {
+      "type": "formula",
+      "property_id": "%60PxN",
+      "formula_expression": "map({{notion:block_property:%5E%7D%7Dj:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, current.{{notion:block_property:w~%5En:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}).sum()"
+    },
+    "Students": {
+      "type": "relation",
+      "property_id": "aCJU",
+      "relation_database_id": "36ab6c5d-657c-4a0d-9b33-05e8cab135b4",
+      "relation_database_title": "Students"
+    },
+    "Adh Diff (Weekly Num)": {
+      "type": "formula",
+      "property_id": "anMc",
+      "formula_expression": "{{notion:block_property:fScg:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}-{{notion:block_property:Tlgy:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}"
+    },
+    "HP(6-11) Zoom/Meeting (1)": {
+      "type": "formula",
+      "property_id": "azdf",
+      "formula_expression": "length(\n  filter(\n    flat(\n      map(\n        filter(\n          {{notion:block_property:aCJU:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}},\n          current.{{notion:block_property:CyxD:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}\n        ),\n        current.{{notion:block_property:m%5D~k:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}\n      )\n    ),\n    or(\n      current == \"Zoom\",\n      current == \"Meeting\"\n    )\n  )\n)\n"
+    },
+    "Students (Enrolled)": {
+      "type": "formula",
+      "property_id": "bPxb",
+      "formula_expression": "let(\n  numStudents,\n  \n    length(filter(\n      {{notion:block_property:aCJU:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}},\n      (current.{{notion:block_property:%7CIej:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} == \"Enrolled\" || current.{{notion:block_property:%7CIej:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} == \"Course Jumps - Enrolled\") && empty(current.{{notion:block_property:UExS:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}})\n    )\n  ),\n numStudents\n)\n\n\n"
+    },
+    "Classroom": {
+      "type": "checkbox",
+      "property_id": "dMZ%3E"
+    },
+    "Student Stats": {
+      "type": "relation",
+      "property_id": "ePuN",
+      "relation_database_id": "a0200a30-5f2f-4d32-bc2f-b4d2e5541a2e",
+      "relation_database_title": "Student Stats"
+    },
+    "Pathway NPS Surveys (TF)": {
+      "type": "relation",
+      "property_id": "exID",
+      "relation_database_id": "118d15b0-3f0a-803a-8f16-daedc8b81378",
+      "relation_database_title": "Pathway NPS Surveys (TF)"
+    },
+    "Adh. 3.0": {
+      "type": "formula",
+      "property_id": "fScg",
+      "formula_expression": "lets(\n\tsumAdherence, {{notion:block_property:%3AAqE:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}.sum(),\n\tnumberStudents, {{notion:block_property:%3AAqE:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}.length(),\n\tround(sumAdherence/numberStudents)\n\t)"
+    },
+    "# HP (6-11) Drops": {
+      "type": "formula",
+      "property_id": "fm%3DS",
+      "formula_expression": "map({{notion:block_property:aCJU:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, current.{{notion:block_property:%7CIej:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} == \"Dropped\" && current.{{notion:block_property:%40%60mH:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} > 5).filter(current).length()\n"
+    },
+    "Career Coach": {
+      "type": "relation",
+      "property_id": "g%3CG%3C",
+      "relation_database_id": "0a577850-b5ba-46f3-a59d-a5cc9eee8844",
+      "relation_database_title": "Staff"
+    },
+    "Pipedrive Cohort ID": {
+      "type": "rich_text",
+      "property_id": "gUJt"
+    },
+    "NPS Score": {
+      "type": "formula",
+      "property_id": "hX%3BY",
+      "formula_expression": "lets(\n    promoter, filter({{notion:block_property:exID:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, current.{{notion:block_property:g%3DLb:118d15b0-3f0a-803a-8f16-daedc8b81378:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} == true).length(),\n    detractor, filter({{notion:block_property:exID:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, current.{{notion:block_property:%7DZZb:118d15b0-3f0a-803a-8f16-daedc8b81378:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} == true).length(),\n    numSurveys, {{notion:block_property:exID:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}.length(),\n    \n    nps, if(numSurveys == 0, toNumber(\"\"), round(((promoter / numSurveys) * 100) - ((detractor / numSurveys) * 100))),\n    nps\n)\n\n"
+    },
+    "6mo.(Adh)": {
+      "type": "formula",
+      "property_id": "hjv%40",
+      "formula_expression": "lets(\n\tenrolledStudentsAdherence, map({{notion:block_property:%5E%7D%7Dj:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, current.{{notion:block_property:j%3AEM:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}),\n\tsumAdherence, enrolledStudentsAdherence.sum(),\n\tnumberStudents, enrolledStudentsAdherence.length(),\n\tround(sumAdherence/numberStudents)\n)"
+    },
+    "HP Score Rollup": {
+      "type": "rollup",
+      "property_id": "ixyT",
+      "relation_database_id": "36ab6c5d-657c-4a0d-9b33-05e8cab135b4",
+      "relation_database_title": "Students",
+      "rollup_property_name": "HP Score",
+      "rollup_function": "show_original"
+    },
+    "Coursework Start Dates (Rollup)": {
+      "type": "rollup",
+      "property_id": "kTVN",
+      "relation_database_id": "36ab6c5d-657c-4a0d-9b33-05e8cab135b4",
+      "relation_database_title": "Students",
+      "rollup_property_name": "Start Date (Disco Coursework)",
+      "rollup_function": "show_original"
+    },
+    "Current Assignments Due (6mo Pace)": {
+      "type": "formula",
+      "property_id": "lXqy",
+      "formula_expression": "lets(\n\tpacingList, {{notion:block_property:Ue_g:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}},\n\tat(pacingList, {{notion:block_property:mwcZ:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}-1)\n)"
+    },
+    "Adh. (Active Avg)": {
+      "type": "formula",
+      "property_id": "m%5DG%3F",
+      "formula_expression": "if(length(filter({{notion:block_property:H%7BiZ:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, not empty(current))) != 0,\n   sum(filter({{notion:block_property:H%7BiZ:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, not empty(current))) /\n   length(filter({{notion:block_property:H%7BiZ:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, not empty(current))),\n   0\n).round()\n\n\n"
+    },
+    "Current Week": {
+      "type": "formula",
+      "property_id": "mwcZ",
+      "formula_expression": "if (\n  dateBetween(now(), {{notion:block_property:%7Ds%3AG:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, \"days\") < 0, \n  0,  /* Return 0 if Start Date hasn't arrived */\n  floor((dateBetween(now(), {{notion:block_property:%7Ds%3AG:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, \"days\") - mod(dateBetween(now(), {{notion:block_property:%7Ds%3AG:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, \"days\"), 7)) / 7) + 1\n)\n\n\n\n\n\n\n\n"
+    },
+    "In Program": {
+      "type": "formula",
+      "property_id": "qQa%5B",
+      "formula_expression": "{{notion:block_property:aCJU:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}.length()"
+    },
+    "Graduation Rate": {
+      "type": "formula",
+      "property_id": "q%5Eht",
+      "formula_expression": "{{notion:block_property:%5D_eN:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}/({{notion:block_property:%5D_eN:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} + {{notion:block_property:bPxb:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} + ({{notion:block_property:s%7Cit:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}-{{notion:block_property:PdMe:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}))"
+    },
+    "Paused": {
+      "type": "formula",
+      "property_id": "rVLF",
+      "formula_expression": "filter({{notion:block_property:aCJU:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, current.{{notion:block_property:%7CIej:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} == \"Paused\").length()"
+    },
+    "Adh. 3.0 (No Zero)": {
+      "type": "formula",
+      "property_id": "sY%3Fc",
+      "formula_expression": "if(\n  length(filter({{notion:block_property:%3AAqE:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, current != 0)) > 0,\n  sum(filter({{notion:block_property:%3AAqE:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, current != 0)) / length(filter({{notion:block_property:%3AAqE:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, current != 0)),\n  0\n).round()\n"
+    },
+    "HP (1-5)": {
+      "type": "formula",
+      "property_id": "s%60Yr",
+      "formula_expression": "map({{notion:block_property:ixyT:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, current <= 5).filter(current).length()\n"
+    },
+    "Dropped ": {
+      "type": "formula",
+      "property_id": "s%7Cit",
+      "formula_expression": "filter({{notion:block_property:aCJU:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, current.{{notion:block_property:%7CIej:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} == \"Dropped\").length()"
+    },
+    "Dropped Student Rollup": {
+      "type": "rollup",
+      "property_id": "tI%5B%5D",
+      "relation_database_id": "36ab6c5d-657c-4a0d-9b33-05e8cab135b4",
+      "relation_database_title": "Students",
+      "rollup_property_name": "Stage",
+      "rollup_function": "show_original"
+    },
+    "\ud83e\uddd1\u200d\ud83c\udf93 Alumni": {
+      "type": "relation",
+      "property_id": "t%5CO~",
+      "relation_database_id": "f3f46cb8-400e-4278-86b8-c4eab3983f4c",
+      "relation_database_title": "Alumni"
+    },
+    "# HP (1-5) Drops": {
+      "type": "formula",
+      "property_id": "yNiX",
+      "formula_expression": "map({{notion:block_property:aCJU:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}, current.{{notion:block_property:%7CIej:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} == \"Dropped\" && current.{{notion:block_property:%40%60mH:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}} <= 5).filter(current).length()\n"
+    },
+    "Student (Specialization)": {
+      "type": "relation",
+      "property_id": "yaRb",
+      "relation_database_id": "36ab6c5d-657c-4a0d-9b33-05e8cab135b4",
+      "relation_database_title": "Students"
+    },
+    "Program Names": {
+      "type": "rollup",
+      "property_id": "zQY%5D",
+      "relation_database_id": "b8432aaa-ee38-4349-bd42-92693b799b70",
+      "relation_database_title": "Programs",
+      "rollup_property_name": "Name",
+      "rollup_function": "show_original"
+    },
+    "HP(6-11) Email/Text/Phone": {
+      "type": "formula",
+      "property_id": "%7BXam",
+      "formula_expression": "length(\n  filter(\n    flat(\n      map(\n        filter(\n          {{notion:block_property:aCJU:00000000-0000-0000-0000-000000000000:833abfe9-9ed0-4d7c-9473-f1ece2104e38}},\n          current.{{notion:block_property:CyxD:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}\n        ),\n        current.{{notion:block_property:m%5D~k:36ab6c5d-657c-4a0d-9b33-05e8cab135b4:833abfe9-9ed0-4d7c-9473-f1ece2104e38}}\n      )\n    ),\n    or(\n      current == \"Email\",\n      current == \"Text\"\n    )\n  )\n)\n"
+    },
+    "Start Date": {
+      "type": "date",
+      "property_id": "%7Ds%3AG"
+    },
+    "Cohort Name": {
+      "type": "title",
+      "property_id": "title"
+    }
+  }
+}
