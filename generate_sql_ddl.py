@@ -115,7 +115,7 @@ def main():
     parser = argparse.ArgumentParser(description='Generate PostgreSQL DDL from Notion JSON schema')
     parser.add_argument('--input', '-i', required=True, help='Path to JSON schema file')
     parser.add_argument('--table-name', '-t', help='Name of the SQL table to create')
-    parser.add_argument('--output', '-o', default='sample_output.sql', help='Path to write SQL output')
+    parser.add_argument('--output', '-o', default='database_schema.sql', help='Path to write SQL output')
     args = parser.parse_args()
 
     try:
@@ -125,7 +125,15 @@ def main():
         print(f'Error reading JSON file: {e}', file=sys.stderr)
         sys.exit(1)
 
-    tbl = args.table_name or 'db_' + schema.get('database_id', 'unknown_db').replace('-', '_')
+# Determine SQL table name: CLI override > database title slug > fallback to ID-based name
+if args.table_name:
+    tbl = args.table_name
+else:
+    db_title = schema.get('database_title', '').strip()
+    if db_title:
+        tbl = slugify(db_title)
+    else:
+        tbl = 'db_' + schema.get('database_id', 'unknown_db').replace('-', '_')
 
     # generate DDL and metadata
     ddl_main = generate_ddl(schema, tbl)

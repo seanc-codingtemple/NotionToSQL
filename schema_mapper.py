@@ -115,4 +115,7 @@ def map_database_schema(notion: Client, database_id: str) -> dict:
             logger.error(f"Error parsing property '{name}': {e}")
             mapped[name] = {"type": prop.get("type"), "error": str(e)}
 
-    return {"database_id": database_id, "properties": mapped}
+    # also capture the human-readable database title
+    title_rich = db.get("title", [])
+    title = "".join([t.get("plain_text", "") for t in title_rich])
+    return {"database_id": database_id, "database_title": title, "properties": mapped}

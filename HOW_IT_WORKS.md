@@ -1,110 +1,137 @@
-# How It Works: Notion Schema to PostgreSQL DDL
+# How It Works: Notion to PostgreSQL Workflow
 
-_Author: Lead Software Engineering Manager_
+This pipeline bridges Notion and PostgreSQL through three clear, modular steps:
 
-## Overview
+1. **export_schema.py** – pull your Notion database schema into JSON.
+2. **generate_sql_ddl.py** – turn that JSON schema into SQL DDL.
+3. **import_page_to_sql.py** – fetch individual Notion pages and build insert scripts.
 
-This repository provides a streamlined, modular pipeline to:
-
-1. **Retrieve** a Notion database schema via the official Notion API.  
-2. **Normalize** and **serialize** that schema to a concise JSON file.  
-3. **Generate** PostgreSQL DDL (Data Definition Language) statements to create tables that mirror the Notion schema, plus a metadata table capturing full property details.
-
-The pipeline consists of three main scripts:
-
-- `index.py` – orchestration script, reads your Notion integration token & database ID, and writes `sample_output.json`.  
-- `notion_utils.py` – utility module handling API calls, property parsing, error handling, and metadata extraction.  
-- `sql_generator.py` – takes `sample_output.json` and produces `sample_output.sql`, containing DDL for your main table and a companion `__schema` table.
-
-A Python virtual environment (`.venv`) and `requirements.txt` ensure you install only the Notion client and dependencies locally.
+Each tool writes well‐named files so you can inspect, version, and extend your data flow.
 
 ---
 
-## Tool 1: notion_utils.py
+## 1. Schema Extraction (export_schema.py)
 
-### Responsibilities
+High‐level:
+Retrieves your Notion database definition and writes it to `database_schema.json`.
 
-- **Retrieve** the raw database object from Notion (`databases.retrieve`).  
-- **Parse** each property definition into a normalized Python dict with:
-  - `type` (the Notion property type)  
-  - `property_id` (immutable UUID assigned by Notion)  
-  - Type-specific metadata (e.g. formula expression, rollup configuration, select options).  
-- **Error handling** and logging: unsupported types, API failures, malformed schemas.
+Usage:
+```shell
+export NOTION_TOKEN=<your_notion_token>
+export NOTION_DATABASE_ID=<your_database_uuid>
+python3 export_schema.py
+# → database_schema.json
+```
 
-### Key Techniques & Challenges
-
-- **Dynamic schemas**: Notion databases can have arbitrarily-named properties of many types. We use a `SUPPORTED_TYPES` set and pattern-match each type.
-- **Stable identifiers**: Users can rename a column in the UI, which changes its `name` but not its `id`. We capture `property_id` to reliably link data ↔ metadata.
-- **Nested objects**: Relation and rollup properties embed database IDs, relation property names, and function names. We unwrap these to flat JSON fields.
-- **API rate-limits & errors**: Wrapped API calls in try/catch, logging failures without halting the entire schema mapping.
-
----
-
-## Tool 2: index.py
-
-### Responsibilities
-
-- Read your **Notion integration token** (`NOTION_TOKEN` env var) and an optional **database ID** (CLI argument).  
-- Instantiate the Notion client (`@notionhq/client`).  
-- Call `map_database_schema` from `notion_utils` to build a JSON-friendly representation.  
-- **Persist** the schema to `sample_output.json` for downstream processing.
-
-### Rationale
-
-- Keeps all side-effects (file writes) at the top level.  
-- Makes the schema export fully repeatable: rerun after schema changes in Notion to regenerate JSON.
+Details:
+- Reads `NOTION_TOKEN` and `DATABASE_ID` (env var or CLI arg).
+- Uses `notion_client` + `schema_mapper.map_database_schema` to normalize properties:
+  - Captures `property_id`, types, and metadata (options, formulas, relations).
+- Saves the output in **database_schema.json**.
 
 ---
 
-## Tool 3: sql_generator.py
+## 2. DDL Generation (generate_sql_ddl.py)
 
-### Responsibilities
+High‐level:
+Consumes **database_schema.json** and writes table‐creation SQL to `database_schema.sql`.
 
-- **Read** `sample_output.json`.  
-- **Generate** SQL DDL:
-  1. **Main table** (`db_<ID>`) with columns for every property:
-     - `id UUID PRIMARY KEY` – we add an explicit primary key using Notion’s page IDs.  
-     - Non-relation columns: mapped by type (e.g. `TEXT`, `NUMERIC`, `TIMESTAMPTZ`).  
-     - **Relation** columns: stored as `UUID[]` arrays of foreign page IDs.  
-     - **Rollup** columns: scalar aggregates become `INTEGER` or `NUMERIC`; others default to `JSONB`.  
-  2. **Metadata table** (`db_<ID>__schema`) capturing full property definitions:
-     - `property_id` (UUID) – stable key.  
-     - `property_name` (original label), `column_name` (slugified SQL).  
-     - `type` and raw `metadata` JSONB blob.
-- **Write** the combined DDL to `sample_output.sql`.
+Usage:
+```shell
+python3 generate_sql_ddl.py \
+  --input database_schema.json \
+  [--table-name custom_table_name] \
+  --output database_schema.sql
+# → database_schema.sql
+```
+If you omit `--table-name`, the script defaults to a slug based on your Notion database’s title, falling back to `db_<DATABASE_ID>`.
 
-### Rationale & Best Practices
-
-- **Array columns** for relations keep the import simple. If you later need a true many-to-many join table, you can generate it from the metadata table without changing the ingestion logic.
-- **Scalar vs JSONB for rollups**: storing numeric aggregates in typed columns optimizes for filtering and aggregation in SQL; fall back to JSONB for free-form rollups.
-- **Schema metadata table** acts as a “dictionary” for your ETL and migrations—don’t rely on human-readable names, use `property_id`.
-
----
-
-## Notion API Nuances
-
-1. **Property Objects** are polymorphic: each has a `type` field and a nested block containing type-specific settings.  
-2. **Properties** are defined at the database level; each page (row) then has analogous **PropertyValue** objects.  
-3. **Relations** store page IDs of linked pages. Under the hood, these are many-to-many.  
-4. **Rollups** compute over those related pages, but Notion does not expose raw aggregates directly in the page objects—only in the schema of the database.  
-5. **Formulas** use a custom expression language; we capture the raw string so you can re-implement or inspect it.
+Details:
+- Maps Notion types to Postgres types (`TEXT`, `NUMERIC`, `UUID[]`, etc.).
+- Slugifies property names into SQL‐safe column identifiers.
+- Table naming logic:
+  1. Use `--table-name` override if provided.
+  2. Otherwise, slugify the Notion database title from `database_schema.json`.
+  3. If title is blank, use `db_<DATABASE_ID>`.
+- Produces two CREATE statements:
+  1. **Main table** (named per above) with a UUID primary key and one column per property.
+  2. **Metadata table** (append `__schema` suffix) listing each property’s ID, name, column, and JSONB metadata.
 
 ---
 
-## Challenges & Solutions
+## 3. Data Import Simulation (import_page_to_sql.py)
 
-- **Changing column names**: We capture `property_id` to decouple schema from labels.  
-- **Huge formulas**: We store expressions as JSONB metadata rather than embedding them in VARCHAR columns.  
-- **Evolving schemas**: By regenerating JSON and re-running SQL DDL, you can migrate safely.
-- **Rate-limits**: You can batch or cache related database requests in `notion_utils` if you have large numbers of relations.
+High‐level:
+Fetches a single Notion page and writes:
+- A JSON file with the cleaned row (`<table>_<page_id>_page.json`).
+- An INSERT SQL script (`<table>_<page_id>_insert.sql`).
+
+Usage:
+```shell
+PAGE_ID=<32‐hex_page_uuid>
+python3 import_page_to_sql.py \
+  --page-id $PAGE_ID \
+  --schema database_schema.json \
+  --table db_<DATABASE_ID>
+# → db_<DATABASE_ID>_<PAGE_ID>_page.json
+# → db_<DATABASE_ID>_<PAGE_ID>_insert.sql
+```
+
+Details:
+- Reads the JSON schema to map Notion property names → column names.
+- Calls `notion.pages.retrieve(page_id)` to fetch the page.
+- Normalizes each value:
+  - **Text** → string
+  - **Number / Boolean** → numeric or boolean
+  - **Date / Timestamp** → ISO date string
+  - **Select / Multi‐select** → string/list of strings
+  - **Relation** → list of page IDs
+  - **Formula / Rollup** → pick primitive result or cleaned array
+  - **People** → list of user IDs
+  - **Files** → list of file URLs
+- Writes two files:
+  1. **`<table>_<page_id>_page.json`**: the raw row dict.
+  2. **`<table>_<page_id>_insert.sql`**: the INSERT statement with a commented JSON of values.
+- Optionally, add `--db-url <POSTGRES_URL>` to connect via `psycopg2` and execute the insert directly.
 
 ---
 
-## Next Steps & Extensions
+## 4. (Optional) JS Exporter (export_schema_node.js)
 
-- **Data Ingestion**: Write an ETL that reads Notion page data (`query` vs `retrieve`) and loads it into the SQL tables. Use the metadata to map column names and types.  
-- **Join Table Generation**: Enable optional generation of many-to-many join tables for relations, based on metadata flags.  
-- **Select / Multi-select options**: Extend the metadata table to store select option lists and colors, then create PostgreSQL ENUM types.  
-- **Versioned Schemas**: Introduce a `schema_version` table and retain historical schema snapshots.
+High‐level:
+A Node.js version of schema export—prints property names and types to stdout.
 
-By modularizing schema mapping and SQL generation, you maintain a clear separation of concerns, minimize brittle string-manipulation errors, and leverage Notion’s API primitives effectively. Enjoy a robust, repeatable workflow for bridging Notion and PostgreSQL!  
+Usage:
+```shell
+export NOTION_TOKEN=<your_notion_token>
+node export_schema_node.js [DATABASE_ID]
+```
+
+Redirect or pipe its output into a `.json` file if desired.
+
+---
+
+### Notion → Postgres Type Map
+
+| Notion Type            | Mapped Value                     |
+|------------------------|----------------------------------|
+| title / rich_text      | plain string                     |
+| number                 | Python numeric                   |
+| select                 | selected option name             |
+| multi_select           | list of option names             |
+| date                   | ISO date/time string             |
+| checkbox               | boolean                          |
+| url / email / phone    | string                           |
+| people                 | list of user IDs                 |
+| files                  | list of URLs                     |
+| relation               | list of page UUIDs               |
+| formula / rollup       | primitive (num, bool, string, date) or cleaned list |
+| status                 | status name                      |
+| created_time / last_edited_time | ISO timestamp          |
+| created_by / last_edited_by     | user ID                 |
+
+For full schema details, see Notion’s Property Object docs: https://developers.notion.com/reference/property-object
+
+---
+
+By separating schema export, DDL generation, and page import, you get a transparent, repeatable pipeline. Feel free to add ETL steps, join‐table generators, or migration scripts as your project grows.

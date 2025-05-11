@@ -7,7 +7,7 @@ Setup and usage:
   source .venv/bin/activate
   pip install -r requirements.txt
   export NOTION_TOKEN=<your_notion_token>
-  python index.py [DATABASE_ID]
+  python export_schema.py [DATABASE_ID]
 
 If DATABASE_ID is omitted, supply it via the NOTION_DATABASE_ID environment variable.
 """
@@ -17,7 +17,7 @@ import sys
 import json
 
 from notion_client import Client
-from notion_utils import map_database_schema
+from schema_mapper import map_database_schema
 
 
 def main():
@@ -35,8 +35,8 @@ if not database_id:
 
     try:
         schema = map_database_schema(notion, database_id)
-        # Write schema to sample_output.json for downstream processing
-        output_file = 'sample_output.json'
+        # Write schema to database_schema.json for downstream processing
+        output_file = 'database_schema.json'
         with open(output_file, 'w', encoding='utf-8') as f:
             f.write(json.dumps(schema, indent=2))
         print(f"Schema written to {output_file}")
